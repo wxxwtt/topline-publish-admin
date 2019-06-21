@@ -39,7 +39,8 @@ export default {
       form: {
         mobile: '18801185985',
         code: ''
-      }
+      },
+      captchaObj: null // 通过 initGeetest 得到的极验验证码对象
     }
   },
 
@@ -51,11 +52,32 @@ export default {
     handleSendCode () {
       const { mobile } = this.form
 
+      if (this.captchaObj) {
+        return this.captchaObj.verify()
+      }
+
       axios({
         method: 'GET',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
       }).then(res => {
-        console.log(res.data)
+        const data = res.data.data
+        window.initGeetest({
+          // 以下配置参数来自服务端 SDK
+          gt: data.gt,
+          challenge: data.challenge,
+          offline: !data.success,
+          new_captcha: data.new_captcha,
+          product: 'bind' // 隐藏按钮式
+        }, (captchaObj) => {
+          this.captchaObj = captchaObj
+          // 这里可以调用验证实例 captchaObj 的实例方法
+          captchaObj.onReady(function () {
+            // 只有 ready 了才能显示验证码
+            captchaObj.verify()
+          }).onSuccess(function () {
+            console.log('验证成功了')
+          })
+        })
       })
     }
   }
