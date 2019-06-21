@@ -20,7 +20,7 @@
           </el-form-item>
           <el-form-item>
             <!-- 给组件加 class，会作用到它的根元素 -->
-            <el-button class="btn-login" type="primary" @click="onSubmit">登录</el-button>
+            <el-button class="btn-login" type="primary" @click="handleLogin">登录</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -45,8 +45,27 @@ export default {
   },
 
   methods: {
-    onSubmit () {
-      console.log('submit!')
+    handleLogin () {
+      axios({
+        method: 'POST',
+        url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+        data: this.form
+      }).then(res => { // >= 200 && < 400 的状态码都会进入这里
+        // Element 提供的 Message 消息提示组件，这也是组件调用的一种形式
+        this.$message({
+          message: '登录成功',
+          type: 'success'
+        })
+
+        // 建议路由跳转都使用 name 去跳转，路由传参非常方便
+        this.$router.push({
+          name: 'home'
+        })
+      }).catch(err => { // >= 400 的 HTTP 状态码都会进入 catch 中
+        if (err.response.status === 400) {
+          this.$message.error('登录失败，手机号或验证码错误')
+        }
+      })
     },
 
     handleSendCode () {
