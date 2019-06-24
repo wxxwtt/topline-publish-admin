@@ -9,6 +9,8 @@ import router from './router'
 
 import './styles/index.less'
 
+import 'nprogress/nprogress.css'
+
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
