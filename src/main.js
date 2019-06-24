@@ -45,6 +45,8 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(response => { // >= 200 && < 400 的状态码进入这里
   console.log('response => ', response)
   // return response
+
+  // 将响应数据处理成统一的数据格式方便使用
   return response.data.data
 }, error => { // >= 400 的状态码会进入这里
   const status = error.response.status
