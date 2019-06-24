@@ -22,6 +22,7 @@ axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
  * Axios 请求拦截器
  * 所有使用 axios 发起的请求都要先经过这里
  * config 是本次请求相关的配置对象
+ * 我们可以通过修改 config 配置来统一自定义请求相关参数
  * return config 就是允许通过的方式
  */
 axios.interceptors.request.use(config => {
@@ -34,10 +35,14 @@ axios.interceptors.request.use(config => {
 
 /**
  * Axios 响应拦截器
+ * 统一处理响应的数据格式
  */
-axios.interceptors.response.use(response => {
-  return response
-}, error => {
+axios.interceptors.response.use(response => { // >= 200 && < 400 的状态码进入这里
+  console.log('response => ', response)
+  // return response
+  return response.data.data
+}, error => { // >= 400 的状态码会进入这里
+  console.log('response error => ', error)
   return Promise.reject(error)
 })
 
