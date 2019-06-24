@@ -26,7 +26,14 @@ axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
 axios.defaults.transformResponse = [function (data) {
   // data 是未经处理的后端响应数据：JSON 格式字符串
   // Do whatever you want to transform the data
-  return JSONbig.parse(data)
+
+  try {
+    // data 数据可能不是标准的 JSON 格式字符串，否则会导致 JSONbig.parse(data) 转换失败报错
+    return JSONbig.parse(data)
+  } catch (err) {
+    // 无法转换的数据直接原样返回
+    return data
+  }
 }]
 
 /**
@@ -38,6 +45,8 @@ axios.defaults.transformResponse = [function (data) {
  */
 axios.interceptors.request.use(config => {
   const userInfo = JSON.parse(window.localStorage.getItem('user_info'))
+  // console.log('request userInfo => ', userInfo)
+  // console.log('request config => ', config)
 
   // 如果登录了，才给那些需要 token 的接口统一添加 token 令牌
   // 登录相关接口不需要添加 token 令牌，想要也没有
@@ -46,6 +55,7 @@ axios.interceptors.request.use(config => {
   }
   return config
 }, error => {
+  // console.log('request error', error)
   return Promise.reject(error)
 })
 
@@ -54,12 +64,20 @@ axios.interceptors.request.use(config => {
  * 统一处理响应的数据格式
  */
 axios.interceptors.response.use(response => { // >= 200 && < 400 的状态码进入这里
-  console.log('response => ', response)
+  // console.log('response => ', response)
   // return response
 
   // 将响应数据处理成统一的数据格式方便使用
-  return response.data.data
+  console.log('response => ', response)
+
+  // 如果返回的数据格式是对象
+  if (typeof response.data === 'object') {
+    return response.data.data
+  } else {
+    return response.data
+  }
 }, error => { // >= 400 的状态码会进入这里
+  // console.dir(error)
   const status = error.response.status
   if (status === 401) {
     // 务必删除本地存储中的用户信息数据
