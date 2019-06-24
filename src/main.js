@@ -3,6 +3,7 @@ import App from './App.vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
+import JSONbig from 'json-bigint'
 
 // 优先查找文件，如果文件找不到则找目录
 // 找到目录，优先加载目录中的 index.js
@@ -17,6 +18,16 @@ import 'nprogress/nprogress.css'
 // 只需要，例如 axios({ url: '/authorizations' })
 // 路径中的 / ，多退少补
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+
+// 使用 JSONbig 处理返回数据中超出 JavaScript 安全整数范围的数字
+// JSONbig 自己会分析数据中的哪个数字超出范围了
+// // 由于后端的数据 id 超出了 JavaScript 的安全整数范围，会导致整数无法精确表示
+// 可以使用 json-biginit 来处理，它会帮你把找出范围的数字给处理好
+axios.defaults.transformResponse = [function (data) {
+  // data 是未经处理的后端响应数据：JSON 格式字符串
+  // Do whatever you want to transform the data
+  return JSONbig.parse(data)
+}]
 
 /**
  * Axios 请求拦截器
