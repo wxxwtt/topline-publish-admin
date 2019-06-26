@@ -17,7 +17,8 @@ import 'nprogress/nprogress.css'
 // 也就是说配置了这个东西，你就不用每次都写长长的 http://xxxx
 // 只需要，例如 axios({ url: '/authorizations' })
 // 路径中的 / ，多退少补
-axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
+// axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
 
 // 使用 JSONbig 处理返回数据中超出 JavaScript 安全整数范围的数字
 // JSONbig 自己会分析数据中的哪个数字超出范围了
@@ -27,6 +28,12 @@ axios.defaults.transformResponse = [function (data) {
   // data 是未经处理的后端响应数据：JSON 格式字符串
   // Do whatever you want to transform the data
 
+  // JSONbig.parse 类似于 JSON.parse，它的作用也是将 JSON 格式字符串转换为 JavaScript 对象
+  // 唯一的区别就是：JSONbig.parse 会检测被转换数据中的数字是否超出了 JavaScript 安全整数范围，如果超出，它会做特殊处理
+  // 如果 data 不是一个 JSON 格式字符串，会导致 JSONbig.parse 转换失败并异常
+  // 例如我们执行删除操作，后端返回一个 204 状态码，但是没有返回任何数据，也就是空字符串
+  // 那这里 JSONbig.parse(空字符串) 就报错了
+  // return JSONbig.parse(data)
   try {
     // data 数据可能不是标准的 JSON 格式字符串，否则会导致 JSONbig.parse(data) 转换失败报错
     return JSONbig.parse(data)
@@ -70,8 +77,9 @@ axios.interceptors.response.use(response => { // >= 200 && < 400 的状态码进
   // 将响应数据处理成统一的数据格式方便使用
   console.log('response => ', response)
 
+  // return response.data.data
   // 如果返回的数据格式是对象
-  if (typeof response.data === 'object') {
+  if (typeof response.data === 'object' && response.data.data) {
     return response.data.data
   } else {
     return response.data
