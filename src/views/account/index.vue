@@ -49,11 +49,10 @@
         <el-upload
           class="avatar-uploader"
           action="http://ttapi.research.itcast.cn/mp/v1_0/user/photo"
-          :headers="{ Authorization: token }"
-          name="photo"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
-          :before-upload="beforeAvatarUpload">
+          :before-upload="beforeAvatarUpload"
+          :http-request="handleUpload">
           <img class="avatar" v-if="userInfo.photo" :src="userInfo.photo">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
@@ -107,7 +106,29 @@ export default {
     },
 
     handleAvatarSuccess () {},
-    beforeAvatarUpload () {}
+    beforeAvatarUpload () {},
+    handleUpload (uploadConfig) {
+      // axios 上传文件
+      // 1. 构建一个 FormData 表单对象
+      //    将文件对象添加到 FormData 中
+      // 2. 将 FormData 配置到请求体 data 选项中
+      const formData = new FormData()
+      formData.append('photo', uploadConfig.file)
+      this.$http({
+        method: 'PATCH',
+        url: '/user/photo',
+        data: formData
+      }).then(data => {
+        this.userInfo.photo = data.photo
+        this.$message({
+          type: 'success',
+          message: '上传成功'
+        })
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('上传失败')
+      })
+    }
   }
 }
 </script>
