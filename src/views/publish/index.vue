@@ -94,6 +94,23 @@ export default {
     }
   },
 
+  watch: {
+    $route (to, from) {
+      // 如果你是从更新页面来的
+      if (from.name === 'publish-edit') {
+        this.articleForm = {
+          title: '', // 标题
+          content: '', // 内容
+          cover: { // 封面
+            type: 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
+            images: [] // 图片链接
+          },
+          channel_id: '' // 频道
+        }
+      }
+    }
+  },
+
   /**
    * 监视器，我们可以监视组件实例中的成员
    * 当成员发生改变的时候，监视函数会被调用
@@ -124,6 +141,7 @@ export default {
   },
 
   created () {
+    console.log('created')
     this.isEdit && this.loadArticle()
 
     // 如果是发布页面，则直接开启监视
