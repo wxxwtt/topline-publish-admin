@@ -37,6 +37,10 @@
         <template v-if="articleForm.cover.type > 0">
           <el-row>
             <el-col :span="6" v-for="n in articleForm.cover.type" :key="n">
+              <!--
+                UploadImage 中显示的图片受数组项影响
+                UploadImage 中选择了上传图片也会影响绑定的这个数据
+               -->
               <UploadImage v-model="articleForm.cover.images[n - 1]"></UploadImage>
             </el-col>
           </el-row>

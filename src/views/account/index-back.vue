@@ -75,33 +75,26 @@ export default {
   },
 
   methods: {
-    async loadUserInfo () {
-      try {
-        const data = await this.$http({
-          method: 'GET',
-          url: '/user/profile'
-        })
-
+    loadUserInfo () {
+      this.$http({
+        method: 'GET',
+        url: '/user/profile'
+      }).then(data => {
         this.userInfo = data
-      } catch (err) {
-        this.$message.error('加载用户信息失败')
-      }
+      })
     },
 
-    async handleUpdate () {
-      try {
-        const { name, intro, email } = this.userInfo
-
-        const data = await this.$http({
-          method: 'PATCH',
-          url: '/user/profile',
-          data: {
-            name,
-            intro,
-            email
-          }
-        })
-
+    handleUpdate () {
+      const { name, intro, email } = this.userInfo
+      this.$http({
+        method: 'PATCH',
+        url: '/user/profile',
+        data: {
+          name,
+          intro,
+          email
+        }
+      }).then(data => {
         // 提交 mutation，修改容器中用户信息
         this.$store.commit('changeUser', data)
 
@@ -109,42 +102,37 @@ export default {
           type: 'success',
           message: '更新用户信息成功'
         })
-      } catch (err) {
+      }).catch(err => {
         console.log(err)
         this.$message.error('更新用户信息失败')
-      }
+      })
     },
 
     handleAvatarSuccess () {},
     beforeAvatarUpload () {},
-    async handleUpload (uploadConfig) {
-      try {
-        // axios 上传文件
-        // 1. 构建一个 FormData 表单对象
-        //    将文件对象添加到 FormData 中
-        // 2. 将 FormData 配置到请求体 data 选项中
-        const formData = new FormData()
-        formData.append('photo', uploadConfig.file)
-
-        const data = await this.$http({
-          method: 'PATCH',
-          url: '/user/photo',
-          data: formData
-        })
-
+    handleUpload (uploadConfig) {
+      // axios 上传文件
+      // 1. 构建一个 FormData 表单对象
+      //    将文件对象添加到 FormData 中
+      // 2. 将 FormData 配置到请求体 data 选项中
+      const formData = new FormData()
+      formData.append('photo', uploadConfig.file)
+      this.$http({
+        method: 'PATCH',
+        url: '/user/photo',
+        data: formData
+      }).then(data => {
         this.userInfo.photo = data.photo
-
         // 将修改之后的照片信息同步到容器中
         this.$store.commit('changeUser', this.userInfo)
-
         this.$message({
           type: 'success',
           message: '上传成功'
         })
-      } catch (err) {
+      }).catch(err => {
         console.log(err)
         this.$message.error('上传失败')
-      }
+      })
     }
   }
 }
