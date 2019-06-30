@@ -99,7 +99,8 @@ export default {
         content: '', // 内容
         cover: { // 封面
           type: 1, // 封面类型 -1:自动，0-无图，1-1张，3-3张
-          images: [] // 图片链接
+          images: [
+          ] // 图片链接
         },
         channel_id: '' // 频道
       },
