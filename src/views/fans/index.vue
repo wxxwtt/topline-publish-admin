@@ -3,6 +3,10 @@
     <p>粉丝概况 Component</p>
     <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
     <div id="main" style="width: 600px; height: 400px;"></div>
+    <br>
+    <EChartsBar></EChartsBar>
+    <br>
+    <EChartsFinance></EChartsFinance>
   </div>
 </template>
 
@@ -13,9 +17,15 @@
 // 4. 基于 DOM 容器初始化 echarts
 
 import echarts from 'echarts'
+import EChartsBar from './components/echarts-bar.vue'
+import EChartsFinance from './components/echarts-finance.vue'
 
 export default {
   name: 'FansOverview',
+  components: {
+    EChartsBar,
+    EChartsFinance
+  },
   data () {
     return {}
   },
