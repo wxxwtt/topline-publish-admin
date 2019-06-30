@@ -3,11 +3,13 @@
     <div class="box-wrap" @click="handleShowMediaBox">
       <p>点击选择图片</p>
       <i
+        v-if="!value"
         style="margin-top: 20px;
         font-size: 90px; color: #eee;"
         class="iconfont icon-image_upload"
       ></i>
-      <img width="120" src="http://toutiao.meiduo.site/FvGUrO7Ru_T2ToQwn_OznfwKnjoL">
+      <!-- 这是给用户看到的这个已经选好的当前封面 -->
+      <img v-else width="120" :src="value">
     </div>
 
     <!-- 对话框 -->
@@ -34,7 +36,7 @@
       </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="handleOk">确 定</el-button>
       </span>
     </el-dialog>
     <!-- /对话框 -->
@@ -44,6 +46,8 @@
 <script>
 export default {
   name: 'UploadImage',
+  // value 就是 cover.images[索引] 的图片
+  props: ['value'],
   data () {
     return {
       dialogVisible: false,
@@ -60,7 +64,13 @@ export default {
     },
 
     handleUplaodSuccess (res) {
+      // 上传成功，预览图片
       this.imageUrl = res.data.url
+    },
+
+    handleOk () {
+      this.$emit('input', this.imageUrl) // 将数据同步到绑定的数据中
+      this.dialogVisible = false // 隐藏对话框
     }
   }
 }
